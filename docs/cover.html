@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Greetwell cover</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { width: 1600px; height: 900px; overflow: hidden; font-family: "Segoe UI", system-ui, Roboto, Helvetica, Arial, sans-serif; color: #0f172a;
+    background: radial-gradient(1200px 700px at 85% 10%, #e3e4ff 0%, rgba(227,228,255,0) 60%), radial-gradient(900px 600px at 0% 100%, #fff1db 0%, rgba(255,241,219,0) 55%), #fbfaf7; }
+  .wrap { display: grid; grid-template-columns: 1fr 640px; gap: 70px; align-items: center; height: 100%; padding: 0 96px; }
+  .logo { display: flex; align-items: center; gap: 16px; font-size: 40px; font-weight: 800; letter-spacing: -.02em; margin-bottom: 44px; }
+  .mark { width: 64px; height: 64px; border-radius: 18px; background: #4f46e5; display: grid; place-items: center; }
+  .mark svg { width: 36px; height: 36px; }
+  h1 { font-size: 76px; line-height: 1.04; font-weight: 850; letter-spacing: -.04em; }
+  h1 em { font-style: normal; color: #4f46e5; }
+  p.sub { font-size: 30px; line-height: 1.4; color: #475569; margin-top: 30px; max-width: 760px; }
+  .aws { margin-top: 44px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .aws span { font-size: 19px; font-weight: 650; color: #92400e; background: #fff7ed; border: 1.5px solid #f59e0b; border-radius: 999px; padding: 7px 16px; }
+  .card { background: #fff; border-radius: 26px; box-shadow: 0 40px 90px rgba(15,23,42,.18); border: 1px solid #e3e7ee; overflow: hidden; }
+  .bar { background: #4f46e5; color: #fff; padding: 22px 26px; display: flex; gap: 14px; align-items: center; }
+  .av { width: 48px; height: 48px; border-radius: 50%; background: rgba(255,255,255,.22); display: grid; place-items: center; font-weight: 800; font-size: 22px; }
+  .bar b { font-size: 23px; display: block; } .bar small { font-size: 16px; opacity: .85; }
+  .log { background: #f8fafc; padding: 26px; display: flex; flex-direction: column; gap: 14px; }
+  .b { max-width: 84%; padding: 14px 18px; border-radius: 20px; font-size: 21px; line-height: 1.38; }
+  .them { background: #fff; border: 1px solid #e3e7ee; border-bottom-left-radius: 6px; align-self: flex-start; }
+  .me { background: #4f46e5; color: #fff; border-bottom-right-radius: 6px; align-self: flex-end; }
+  .lead { margin: 4px 26px 26px; border: 1px solid #e3e7ee; border-left: 6px solid #e11d48; border-radius: 16px; padding: 18px 20px; display: grid; grid-template-columns: 1fr auto; gap: 6px 14px; background: #fff; }
+  .lead strong { font-size: 21px; }
+  .lead .why { grid-column: 1 / -1; font-size: 17px; color: #526077; }
+  .pill { font-size: 16px; font-weight: 800; color: #e11d48; background: #ffe9ee; border-radius: 999px; padding: 6px 13px; letter-spacing: .04em; align-self: start; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div>
+    <div class="logo"><span class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span>Greetwell</div>
+    <h1>Paste your website.<br>Get an AI assistant that <em>qualifies your leads.</em></h1>
+    <p class="sub">Answers visitors from your own content, then hands you leads scored hot, warm or cold. Ready in a minute, one line of code.</p>
+    <div class="aws"><span>Amazon Bedrock</span><span>AWS Lambda</span><span>Amazon DynamoDB</span><span>Amazon CloudFront</span><span>Amazon S3</span></div>
+  </div>
+  <div class="card">
+    <div class="bar"><span class="av">B</span><span><b>Bright Smile Dental</b><small>AI assistant · replies instantly</small></span></div>
+    <div class="log">
+      <div class="b me">Do you do Invisalign? How much is it?</div>
+      <div class="b them">Yes. Treatment starts at $3,200 and the first consultation is free. Are you hoping to start soon?</div>
+      <div class="b me">This month. I'm Priya, priya@example.com</div>
+      <div class="b them">Thanks Priya! The team will email you today to book your consultation.</div>
+    </div>
+    <div class="lead"><strong>Priya · priya@example.com</strong><span class="pill">HOT · 85</span><span class="why">Wants Invisalign this month · left an email · gave a timeline</span></div>
+  </div>
+</div>
+</body>
+</html>

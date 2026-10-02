@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Greetwell: an AI assistant for your website that qualifies leads</title>
+<meta name="description" content="Paste your website address. In about a minute Greetwell builds an AI chat assistant that answers visitors from your own content, qualifies them, and hands you scored leads. No signup, one line of code.">
+<meta property="og:title" content="Greetwell: turn website visitors into qualified leads">
+<meta property="og:description" content="Paste your URL, get an AI assistant that answers visitors and qualifies leads. Built on AWS.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#4f46e5">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css">
+</head>
+<body>
+
+<header class="wrap nav">
+  <a class="logo" href="/">
+    <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span>
+    Greetwell
+  </a>
+  <nav class="nav-links" aria-label="Main">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#aws">Built on AWS</a>
+    <a href="#faq">FAQ</a>
+    <a class="btn sm" href="#build">Build my assistant</a>
+  </nav>
+</header>
+
+<main>
+<div class="wrap hero" id="build">
+  <div>
+    <span class="eyebrow">Free during beta · No signup</span>
+    <h1>Your website, answering customers and <em>qualifying leads</em> while you work.</h1>
+    <p class="lede">Paste your website address. In about a minute you get an AI chat assistant that knows your business, answers visitors from your own content, and hands you leads scored hot, warm or cold.</p>
+
+    <form class="build" id="build-form" novalidate>
+      <div id="url-mode">
+        <label for="url" class="sr-only">Your website address</label>
+        <div class="build-row">
+          <input type="text" id="url" name="url" inputmode="url" autocomplete="url" placeholder="yourbusiness.com" spellcheck="false">
+          <button class="btn" type="submit" id="build-btn">Build my assistant</button>
+        </div>
+      </div>
+      <div id="text-mode" class="hidden">
+        <label for="text">Describe your business</label>
+        <textarea id="text" name="text" rows="6" maxlength="8000" placeholder="What you offer, who it's for, prices, opening hours, location, how to book or buy…"></textarea>
+        <div style="margin-top:10px"><button class="btn" type="submit">Build my assistant</button></div>
+      </div>
+      <div id="form-error" class="form-error hidden" role="alert"></div>
+      <div class="build-meta">
+        <span>Ready in about a minute</span><span>One line of code to install</span>
+        <button type="button" class="build-alt" id="mode-toggle">No website? Describe your business instead</button>
+      </div>
+    </form>
+    <div class="mine hidden" id="mine"></div>
+  </div>
+
+  <div class="shot" aria-label="Example conversation in which the assistant answers a visitor and captures a lead">
+    <div class="shot-bar"><i></i><i></i><i></i><span>brightsmiledental.com</span></div>
+    <div class="shot-body">
+      <div class="b them">Hi! I'm the Bright Smile assistant. How can I help?</div>
+      <div class="b me">Do you do Invisalign? How much is it?</div>
+      <div class="b them">Yes. Invisalign starts at $3,200 and we offer a free first consultation. Are you looking to start soon?</div>
+      <div class="b me">This month ideally. I'm Priya, priya@example.com</div>
+      <div class="b them">Thanks Priya! The team will email you today to book your consultation.</div>
+      <div class="leadcard">
+        <strong>Priya · priya@example.com</strong><span class="pill hot">Hot · 85</span>
+        <span class="muted">Wants Invisalign, starting this month. Left an email, gave a timeline.</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="alt" id="how">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>From website address to working assistant in three steps</h2>
+      <p>No developer, no training data to prepare, no account to create.</p>
+    </div>
+    <div class="grid3">
+      <div class="card"><div class="step-n">1</div><h3>Paste your address</h3><p>Greetwell reads your home page and the pages that matter most: pricing, services, about, FAQ and contact. It writes a profile of your business and the questions worth asking your leads.</p></div>
+      <div class="card"><div class="step-n">2</div><h3>Try it and tune it</h3><p>Chat with your assistant in a live preview. Change its name, greeting, colour and qualifying questions, and add notes for anything your site doesn't say.</p></div>
+      <div class="card"><div class="step-n">3</div><h3>Add one line of code</h3><p>Copy a single script tag into your site. It works with WordPress, Shopify, Wix, Squarespace, Webflow and plain HTML. Leads start arriving in your dashboard.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Built to get you the right conversations, not more noise</h2>
+      <p>Most chat widgets collect every email address and leave you to sort them out. Greetwell tells you who is ready to buy and why.</p>
+    </div>
+    <div class="grid3">
+      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v14l-4-3-4 3-4-3-4 3z"/></svg></div><h3>Answers from your content only</h3><p>The assistant answers from what your site and your notes say. When it doesn't know, it says so and offers to pass the question to you. It never invents a price or a promise.</p></div>
+      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></div><h3>Leads scored, with reasons</h3><p>Every lead gets a score from 0 to 100 and a hot, warm or cold label, based on intent, timeline, budget and how reachable they are. You see exactly why.</p></div>
+      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></div><h3>Helpful first, then curious</h3><p>Visitors get their answer before they are asked for anything. The assistant asks one natural question at a time, the way a good receptionist would.</p></div>
+      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><h3>Every conversation, in full</h3><p>Read the whole transcript behind each lead, and the chats that didn't become leads, so you learn what visitors ask and where your site falls short.</p></div>
+      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 14a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 10a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg></div><h3>Leads go where you work</h3><p>Send each new lead to Slack, Zapier, Make or your CRM through a webhook the moment it is captured, or export everything to CSV.</p></div>
+      <div class="card"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></div><h3>Speaks your customer's language</h3><p>The assistant replies in whatever language the visitor writes in, and greets them in the language of your site.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="alt" id="aws">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Serverless on AWS, from the first request</h2>
+      <p>Nothing runs when nobody is chatting, so a small business assistant costs cents to operate. The whole stack is one CloudFormation template.</p>
+    </div>
+    <div class="arch">
+      <div><strong>CloudFront + S3</strong><span>Serves this site and the widget worldwide, and fronts the API.</span></div>
+      <div><strong>API Gateway + Lambda</strong><span>One Python function for the API, one background worker that reads sites.</span></div>
+      <div><strong>DynamoDB</strong><span>Assistants, conversations, leads and rate-limit counters in a single table.</span></div>
+      <div><strong>Amazon Bedrock</strong><span>Claude writes the business profile and holds the conversations.</span></div>
+      <div><strong>Guardrails</strong><span>Per-visitor, per-assistant and global daily caps. Safe fetching of user-supplied addresses.</span></div>
+    </div>
+    <p class="muted small" style="margin-top:18px">Small sites fit in the prompt whole and are cached, so answers stay grounded without a vector database. Larger sites are narrowed per question with BM25 retrieval in the Lambda itself.</p>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head"><h2>Questions</h2></div>
+    <details><summary>Do I need an account?</summary><p>No. When your assistant is built you get a private dashboard link. Bookmark it: the link is the key to your dashboard, and this browser remembers it for you too.</p></details>
+    <details><summary>What if my site is built with JavaScript or has very little text?</summary><p>If Greetwell can't read enough from your site, it tells you, and you can describe your business in a text box instead. You can also add notes at any time for things your site doesn't mention.</p></details>
+    <details><summary>Will it make things up?</summary><p>It is instructed to state only what your content says and to admit when it doesn't know, then offer to pass the question to you. Like any AI it can still make mistakes, so the widget tells visitors it is an AI assistant.</p></details>
+    <details><summary>What does it cost?</summary><p>Greetwell is free while it is in beta, with a daily message limit per assistant. Paid plans for higher volume are planned.</p></details>
+    <details><summary>What happens to conversation data?</summary><p>Conversations are deleted automatically after 45 days. Leads stay until you delete them. You can delete your assistant and everything it stored from the dashboard at any time.</p></details>
+    <details><summary>How do I install it?</summary><p>Copy the one-line script tag from your dashboard and paste it before the closing <code>&lt;/body&gt;</code> tag of your site, or into your site builder's "custom code" setting.</p></details>
+  </div>
+</section>
+
+<section class="alt cta">
+  <div class="wrap">
+    <h2>See it on your own site's content</h2>
+    <p class="lede" style="margin:14px auto 26px">It takes about a minute, and you can try the assistant before installing anything. Or ask the assistant in the corner of this page about Greetwell.</p>
+    <a class="btn" href="#build">Build my assistant</a>
+  </div>
+</section>
+</main>
+
+<div class="wrap">
+  <footer class="site">
+    <span>© 2026 Greetwell. Built and shipped on AWS with an AI coding agent for the Zero to Shipped hackathon.</span>
+    <span>The assistant on this page is a live Greetwell assistant.</span>
+  </footer>
+</div>
+
+<script src="/assets/home.js" defer></script>
+<script src="/widget.js" data-bot="demo" async></script>
+</body>
+</html>

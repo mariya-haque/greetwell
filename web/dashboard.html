@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · Greetwell</title>
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/dashboard.css">
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/">
+      <span class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg></span>
+      Greetwell
+    </a>
+    <span class="bot-name" id="bot-name"></span>
+    <div class="actions hidden" id="top-actions">
+      <a class="btn ghost sm" id="preview-link" target="_blank" rel="noopener">Try the assistant</a>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" id="app" aria-live="polite">
+  <div class="center"><div class="box"><div class="spinner"></div><p class="muted">Loading your dashboard…</p></div></div>
+</main>
+
+<noscript><p class="wrap">The dashboard needs JavaScript.</p></noscript>
+<script src="/assets/dashboard.js" defer></script>
+</body>
+</html>

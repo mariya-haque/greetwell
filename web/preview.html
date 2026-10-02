@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview your assistant · Greetwell</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+  .note-bar { background: var(--ink); color: #fff; font-size: 14px; padding: 9px 0; }
+  .note-bar .wrap { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  .note-bar a { color: #c7d2fe; }
+  .fake h1 { font-size: clamp(30px, 4.4vw, 46px); font-weight: 800; letter-spacing: -.03em; max-width: 16em; }
+  .fake .lede { margin-bottom: 30px; }
+  .ph { background: #e9edf3; border-radius: 10px; height: 14px; margin-bottom: 10px; }
+  .ph.w70 { width: 70%; } .ph.w90 { width: 90%; } .ph.w50 { width: 50%; }
+  .tips { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  .tips li { background: #fff; border: 1px solid var(--line); border-radius: 11px; padding: 11px 14px; font-size: 15px; }
+  .tips li::before { content: "Try: "; color: var(--faint); font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="note-bar"><div class="wrap">
+  <span>This is a sample page showing how your assistant looks on a website.</span>
+  <a id="back" href="/">Back to Greetwell</a>
+</div></div>
+
+<main class="wrap fake" style="padding-top:56px;padding-bottom:120px">
+  <!-- One narrow column on the left, so the open chat window never covers it. -->
+  <div style="max-width:520px">
+    <h1 id="title">Your website</h1>
+    <p class="lede" id="status">Loading your assistant…</p>
+    <div class="card">
+      <h3>Put it through its paces</h3>
+      <p style="margin-bottom:14px">Talk to the chat in the corner the way a customer would.</p>
+      <ul class="tips">
+        <li>Ask something your website answers, like prices or opening hours.</li>
+        <li>Ask something it can't know, and check that it doesn't guess.</li>
+        <li>Say what you need and leave an email address, then look at your dashboard's Leads tab.</li>
+      </ul>
+    </div>
+    <div style="margin-top:32px"><div class="ph w90"></div><div class="ph w70"></div><div class="ph w90"></div><div class="ph w50"></div></div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var botId = new URLSearchParams(location.search).get('bot') || '';
+  var status = document.getElementById('status');
+  if (!/^[A-Za-z0-9_-]{4,40}$/.test(botId)) { status.textContent = 'This preview link is missing its assistant.'; return; }
+  fetch('/api/bots/' + botId + '/public').then(function (res) { return res.ok ? res.json() : null; }).then(function (bot) {
+    if (!bot) { status.textContent = 'This assistant doesn\'t exist any more.'; return; }
+    if (bot.status !== 'ready') { status.textContent = 'This assistant is still being built. Reload in a minute.'; return; }
+    document.getElementById('title').textContent = bot.name;
+    document.title = 'Preview: ' + bot.name + ' · Greetwell';
+    status.textContent = 'Imagine this is your home page. Your assistant is in the bottom right corner.';
+    var script = document.createElement('script');
+    script.src = '/widget.js';
+    script.setAttribute('data-bot', botId);
+    script.setAttribute('data-open', 'true');
+    document.body.appendChild(script);
+  }).catch(function () { status.textContent = 'Could not load the assistant. Check your connection and reload.'; });
+})();
+</script>
+</body>
+</html>

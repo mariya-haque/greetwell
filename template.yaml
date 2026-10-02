@@ -1,0 +1,274 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Greetwell - paste a website address, get an AI assistant that answers
+  visitors and qualifies leads. CloudFront + S3 + API Gateway + Lambda +
+  DynamoDB + Amazon Bedrock.
+
+Parameters:
+  ModelId:
+    Type: String
+    Default: anthropic.claude-opus-5-5
+    Description: Claude model on Amazon Bedrock used for conversations and site profiles.
+  ModelFallbacks:
+    Type: String
+    Default: anthropic.claude-opus-4-8,anthropic.claude-haiku-4-5
+    Description: Models tried in order when this account has no access to ModelId.
+  RefusalFallbackModel:
+    Type: String
+    Default: anthropic.claude-opus-4-8
+    Description: Model that answers when ModelId declines a request. Empty to disable.
+  DailyModelCallCap:
+    Type: Number
+    Default: 600
+    Description: Hard ceiling on chat model calls per day across all assistants.
+  DailyMessagesPerAssistant:
+    Type: Number
+    Default: 300
+  DailyNewAssistants:
+    Type: Number
+    Default: 60
+  AlertEmail:
+    Type: String
+    Default: ''
+    Description: Optional. Email this address when the account's monthly AWS spend passes 80% of MonthlyBudgetUsd.
+  MonthlyBudgetUsd:
+    Type: Number
+    Default: 50
+
+Conditions:
+  HasAlertEmail: !Not [!Equals [!Ref AlertEmail, '']]
+
+Globals:
+  Function:
+    Runtime: python3.13
+    Architectures: [x86_64]
+    MemorySize: 1024
+    CodeUri: build/
+    Environment:
+      Variables:
+        APP_MODE: aws
+        TABLE_NAME: !Ref Table
+        DATA_BUCKET: !Ref DataBucket
+        MODEL_ID: !Ref ModelId
+        MODEL_FALLBACKS: !Ref ModelFallbacks
+        REFUSAL_FALLBACK_MODEL: !Ref RefusalFallbackModel
+        LLM_CALLS_GLOBAL_PER_DAY: !Ref DailyModelCallCap
+        MSGS_PER_BOT_PER_DAY: !Ref DailyMessagesPerAssistant
+        BOTS_GLOBAL_PER_DAY: !Ref DailyNewAssistants
+        # CloudFront adds this header on the way to the API. The API rejects
+        # requests without it, so every call goes through the distribution.
+        ORIGIN_SECRET: !Select [2, !Split ['/', !Ref 'AWS::StackId']]
+
+Resources:
+  Table:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: pk, AttributeType: S }
+        - { AttributeName: sk, AttributeType: S }
+      KeySchema:
+        - { AttributeName: pk, KeyType: HASH }
+        - { AttributeName: sk, KeyType: RANGE }
+      TimeToLiveSpecification: { AttributeName: ttl, Enabled: true }
+      PointInTimeRecoverySpecification: { PointInTimeRecoveryEnabled: true }
+      SSESpecification: { SSEEnabled: true }
+
+  DataBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  SiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault: { SSEAlgorithm: AES256 }
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  SiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref SiteBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: CloudFrontRead
+            Effect: Allow
+            Principal: { Service: cloudfront.amazonaws.com }
+            Action: s3:GetObject
+            Resource: !Sub '${SiteBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:${AWS::Partition}:cloudfront::${AWS::AccountId}:distribution/${Distribution}'
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 40
+        ThrottlingRateLimit: 20
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Greetwell HTTP API (assistants, chat, leads)
+      Handler: app.handler.handler
+      Timeout: 29
+      Environment:
+        Variables:
+          BUILDER_FUNCTION: !Ref BuilderFunction
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref Table }
+        - S3CrudPolicy: { BucketName: !Ref DataBucket }
+        - LambdaInvokePolicy: { FunctionName: !Ref BuilderFunction }
+        - Statement:
+            - Sid: InvokeClaudeOnBedrock
+              Effect: Allow
+              Action:
+                - bedrock-mantle:CreateInference
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+              Resource: '*'
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /api/{proxy+}
+            Method: ANY
+
+  BuilderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Greetwell background worker (reads a site, builds the assistant)
+      Handler: app.builder.handler
+      Timeout: 240
+      EventInvokeConfig:
+        MaximumRetryAttempts: 0
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref Table }
+        - S3CrudPolicy: { BucketName: !Ref DataBucket }
+        - Statement:
+            - Sid: InvokeClaudeOnBedrock
+              Effect: Allow
+              Action:
+                - bedrock-mantle:CreateInference
+                - bedrock:InvokeModel
+                - bedrock:InvokeModelWithResponseStream
+              Resource: '*'
+
+  SiteOriginAccess:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub '${AWS::StackName}-site'
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  ApiOriginRequestPolicy:
+    Type: AWS::CloudFront::OriginRequestPolicy
+    Properties:
+      OriginRequestPolicyConfig:
+        Name: !Sub '${AWS::StackName}-api'
+        Comment: Forward what the API needs, plus the real viewer address for rate limiting
+        CookiesConfig: { CookieBehavior: none }
+        QueryStringsConfig: { QueryStringBehavior: all }
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers:
+            - Content-Type
+            - Accept
+            - Origin
+            - Referer
+            - X-Admin-Key
+            - Access-Control-Request-Method
+            - Access-Control-Request-Headers
+            - CloudFront-Viewer-Address
+            - CloudFront-Viewer-Country
+
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Comment: !Sub '${AWS::StackName} site, widget and API'
+        DefaultRootObject: index.html
+        HttpVersion: http2and3
+        IPV6Enabled: true
+        PriceClass: PriceClass_100
+        Origins:
+          - Id: site
+            DomainName: !GetAtt SiteBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt SiteOriginAccess.Id
+            S3OriginConfig: { OriginAccessIdentity: '' }
+          - Id: api
+            DomainName: !Sub '${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}'
+            CustomOriginConfig:
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols: [TLSv1.2]
+              OriginReadTimeout: 30
+            OriginCustomHeaders:
+              - HeaderName: X-Origin-Verify
+                HeaderValue: !Select [2, !Split ['/', !Ref 'AWS::StackId']]
+        DefaultCacheBehavior:
+          TargetOriginId: site
+          ViewerProtocolPolicy: redirect-to-https
+          Compress: true
+          AllowedMethods: [GET, HEAD, OPTIONS]
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6          # Managed-CachingOptimized
+          ResponseHeadersPolicyId: 67f7725c-6f97-4210-82d7-5512b31e9d03  # Managed-SecurityHeadersPolicy
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: api
+            ViewerProtocolPolicy: https-only
+            Compress: true
+            AllowedMethods: [GET, HEAD, OPTIONS, PUT, PATCH, POST, DELETE]
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad        # Managed-CachingDisabled
+            OriginRequestPolicyId: !Ref ApiOriginRequestPolicy
+
+  SpendAlert:
+    Type: AWS::Budgets::Budget
+    Condition: HasAlertEmail
+    Properties:
+      Budget:
+        BudgetName: !Sub '${AWS::StackName}-monthly-spend'
+        BudgetType: COST
+        TimeUnit: MONTHLY
+        BudgetLimit: { Amount: !Ref MonthlyBudgetUsd, Unit: USD }
+      NotificationsWithSubscribers:
+        - Notification:
+            NotificationType: ACTUAL
+            ComparisonOperator: GREATER_THAN
+            Threshold: 80
+          Subscribers:
+            - { SubscriptionType: EMAIL, Address: !Ref AlertEmail }
+
+Outputs:
+  SiteUrl:
+    Description: The live application
+    Value: !Sub 'https://${Distribution.DomainName}'
+  SiteBucketName:
+    Value: !Ref SiteBucket
+  DistributionId:
+    Value: !Ref Distribution
+  ApiFunctionName:
+    Value: !Ref ApiFunction
+  BuilderFunctionName:
+    Value: !Ref BuilderFunction
+  TableName:
+    Value: !Ref Table
